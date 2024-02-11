@@ -1,0 +1,22 @@
+﻿<Window x:Class="TOPOTUSHKI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TOPOTUSHKI"
+        mc:Ignorable="d"
+        Title="Топотушки" Height="450" Width="800" FontFamily="Comic Sans MS" Icon="/logo.png">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Image Source="logo.png" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"></Image>
+        
+        <TextBlock Text="Топотушки" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"></TextBlock>
+        <Frame Grid.Row="1" Name="MainFrame" ContentRendered="MainFrame_ContentRendered"></Frame>
+        <Button Content="Назад" HorizontalAlignment="Right" Name="BackBtn" Click="BackBtn_Click" ></Button>
+    </Grid>
+</Window>
