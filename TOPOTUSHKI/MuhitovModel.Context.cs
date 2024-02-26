@@ -32,7 +32,8 @@ namespace TOPOTUSHKI
         {
             throw new UnintentionalCodeFirstException();
         }
-    
+        
+        
         public virtual DbSet<Order> Order { get; set; }
         public virtual DbSet<PickupPoint> PickupPoint { get; set; }
         public virtual DbSet<Product> Product { get; set; }

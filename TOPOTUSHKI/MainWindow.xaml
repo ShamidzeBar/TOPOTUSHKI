@@ -15,7 +15,7 @@
 
         <Image Source="logo.png" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left"></Image>
         
-        <TextBlock Text="Топотушки" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"></TextBlock>
+        <TextBlock Text="Топотушки" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="30"></TextBlock>
         <Frame Grid.Row="1" Name="MainFrame" ContentRendered="MainFrame_ContentRendered"></Frame>
         <Button Content="Назад" HorizontalAlignment="Right" Name="BackBtn" Click="BackBtn_Click" ></Button>
     </Grid>

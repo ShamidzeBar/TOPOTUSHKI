@@ -11,9 +11,10 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
             <StackPanel Margin="10" HorizontalAlignment="Left">
                 <TextBlock Text="Введите название для поиска"></TextBlock>
                 <TextBox Name="SearchTextBox" Width="175" Margin="5" TextChanged="SearchTextBox_Changed"></TextBox>
@@ -35,7 +36,7 @@
                     <TextBlock>15% и более</TextBlock>
                 </ComboBox>
             </StackPanel>
-            <StackPanel Margin="20,0,0,0">
+            <StackPanel Margin="20,20,0,0">
                 <TextBlock Text="Показано" HorizontalAlignment="Center"></TextBlock>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Name="RemainCount"/>
@@ -45,7 +46,21 @@
             </StackPanel>
         </StackPanel>
 
-        <ListView Name="ShoesListView" Grid.Row="1" FontFamily="Comic Sans MS" >
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <TextBlock Text="Вы авторизованы как:" Margin="5"></TextBlock>
+            <TextBlock Name="LastName_TB" Margin="5,5,0,5"></TextBlock>
+            <TextBlock Name="FirstName_TB" Margin="5,5,0,5"></TextBlock>
+            <TextBlock Name="Patronymic_TB" Margin="5,5,15,5"></TextBlock>
+            <TextBlock Name="Role_TB" Margin="5,5,5,5"></TextBlock>
+        </StackPanel>
+        <Button Name="MakeOrderBtn" Visibility="Hidden" Content="Сделать заказ" Click="MakeOrderBtn_Click" Margin="615,0,10,0" Grid.Row="1"/>
+
+        <ListView Name="ShoesListView" Grid.Row="2" FontFamily="Comic Sans MS" >
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить к заказу" Click="MenuItem_Click" ></MenuItem>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -73,7 +88,7 @@
                             </Image.Source>
                         </Image>
 
-                        <TextBlock Text="{Binding ProductName}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" FontSize="20" ></TextBlock>
+                        <TextBlock Text="{Binding ProductName}" FontWeight="Bold" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" FontSize="20" ></TextBlock>
                         <TextBlock Text="{Binding ProductDescription}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" FontSize="20" ></TextBlock>
                         <TextBlock Text="{Binding ProductManufacturer}" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" FontSize="20" ></TextBlock>
                         <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="3">

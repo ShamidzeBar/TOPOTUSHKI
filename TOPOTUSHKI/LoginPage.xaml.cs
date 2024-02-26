@@ -33,34 +33,44 @@ namespace TOPOTUSHKI
                    pass = Password_TextBox.Text;
 
             if (LogIn_TextBox.Text == "")
-                MessageBox.Show("Введите логин пользователя!");
-            else
             {
-                if (Password_TextBox.Text == "")
-                    MessageBox.Show("Введите пароль пользователя!");
-                else
+                MessageBox.Show("Введите логин пользователя!");
+                return;
+            }
+            if (Password_TextBox.Text == "")
+            {
+                MessageBox.Show("Введите пароль пользователя!");
+                return;
+            }
+            foreach (var user in currentUsers)
+            {
+                if (user.UserLogin == log)
                 {
-                    foreach (var user in currentUsers)
+                    is_autorized = true;
+                    if (user.UserPassword == pass)
                     {
-                        if (user.UserLogin == log)
-                        {
-                            is_autorized = true;
-                            if (user.UserPassword == pass)
-                            {
-                                Manager.MainFrame.Navigate(new TopotushkiPage());
-                            }
-                            else
-                            {
-                                MessageBox.Show("Неправильный пароль!");
-                            }
-                        }
+                        Manager.MainFrame.Navigate(new TopotushkiPage(user));
+                        LogIn_TextBox.Clear();
+                        Password_TextBox.Clear();
                     }
-                    if (is_autorized == false)
+                    else
                     {
-                        MessageBox.Show("Пользователя с таким логином не существует");
+                        MessageBox.Show("Неправильный пароль!");
                     }
                 }
             }
+            if (is_autorized == false)
+            {
+                MessageBox.Show("Пользователя с таким логином не существует");
+            }
+
+        }
+
+        private void GuestAccessBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Manager.MainFrame.Navigate(new TopotushkiPage(null));
+            LogIn_TextBox.Clear();
+            Password_TextBox.Clear();
         }
     }
 }

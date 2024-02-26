@@ -20,15 +20,29 @@ namespace TOPOTUSHKI
     /// </summary>  
     public partial class TopotushkiPage : Page
     {
-        public TopotushkiPage()
+        private List<Product> SelectedProducts;
+        private User user;
+        public TopotushkiPage(User init_user)
         {
             InitializeComponent();
-
+            user = init_user;
+            SelectedProducts = new List<Product>();
             UpdateTopoPage();
         }
 
         private void UpdateTopoPage()
         {
+            if(user == null)
+            {
+                LastName_TB.Text = ("Гость");
+            }
+            else
+            {
+                LastName_TB.Text = user.UserSurname;
+                FirstName_TB.Text = user.UserName;
+                Patronymic_TB.Text = user.UserPatronymic;
+                Role_TB.Text = "Роль: " + user.GetStringRole();
+            }
             var currentShoes = TradeEntities.GetContext().Product.ToList();
 
             int initialcount = currentShoes.Count(),
@@ -86,6 +100,54 @@ namespace TOPOTUSHKI
         private void DiscountComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdateTopoPage();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if(ShoesListView.SelectedIndex >= 0)
+            {
+                List<Product> ProductsBD = TradeEntities.GetContext().Product.ToList();
+
+                Product product = ShoesListView.SelectedItem as Product;
+                
+
+                foreach(Product ProductBD in ProductsBD)
+                {
+                    if(ProductBD.ProductArticleNumber == product.ProductArticleNumber)
+                    {
+                        if(ProductBD.ProductQuantityInStock > 0)
+                        {
+                            bool inList = false;
+                            foreach(Product selProduct in SelectedProducts)
+                            {
+                                if(selProduct.ProductArticleNumber == product.ProductArticleNumber)
+                                {
+                                    MessageBox.Show("Товар уже был в списке, поэтому количество этого товара в заказе было увеличено на 1");
+                                    selProduct.ProductQuantityInStock++;
+                                    inList = true;
+                                }
+                            }
+                            if (!inList)
+                            {
+                                product.ProductQuantityInStock = 1;
+                                SelectedProducts.Add(product);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Товара больше нет в наличии");
+                        }
+                    }
+                }
+            }
+            if (SelectedProducts.Count > 0)
+                MakeOrderBtn.Visibility = Visibility.Visible;
+            ShoesListView.SelectedIndex = -1;
+        }
+
+        private void MakeOrderBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Manager.MainFrame.Navigate(new OrderWindow(SelectedProducts, user));
         }
     }
 }

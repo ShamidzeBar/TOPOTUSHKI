@@ -25,7 +25,8 @@
                 <TextBlock Text="Пароль: "></TextBlock>
                 <TextBox Name="Password_TextBox" Width="150"></TextBox>
             </StackPanel>
-            <Button Content="Авторизоваться" Click="LogInBtn_Click" Margin="0,20,0,0"></Button>
+            <Button Content="Авторизоваться" Click="LogInBtn_Click" Margin="0,20,0,20"></Button>
+            <Button Content="Зайти как гость" Name="GuestAccessBtn" Click="GuestAccessBtn_Click"/>
         </StackPanel>
     </Grid>
 </Page>

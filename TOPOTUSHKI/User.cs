@@ -21,7 +21,11 @@ namespace TOPOTUSHKI
         public string UserLogin { get; set; }
         public string UserPassword { get; set; }
         public int UserRole { get; set; }
-    
+        public String GetStringRole()
+        {
+            return Role.RoleName;
+        }
+
         public virtual Role Role { get; set; }
     }
 }
