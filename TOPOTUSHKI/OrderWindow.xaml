@@ -19,7 +19,7 @@
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
 
         <TextBlock Text="Дата формирования заказа" Grid.Column="0" Grid.Row="0"></TextBlock>
@@ -28,8 +28,8 @@
         <TextBlock Text="Номер заказа" Grid.Column="0" Grid.Row="3"></TextBlock>
         <TextBlock Text="Пункт выдачи" Grid.Column="0" Grid.Row="5"></TextBlock>
 
-        <DatePicker Grid.Row="1" Grid.Column="1"></DatePicker>
-        <DatePicker Grid.Row="0" Grid.Column="1"></DatePicker>
+        <DatePicker Name="OrderDate" Grid.Row="0" Grid.Column="1"></DatePicker>
+        <DatePicker Name="DeliveryDate" Grid.Row="1" Grid.Column="1"></DatePicker>
 
         <TextBlock Name="ClientName" Grid.Column="1" Grid.Row="2"></TextBlock>
         <TextBlock Name="OrderID" Grid.Column="1" Grid.Row="3"></TextBlock>
@@ -74,13 +74,20 @@
                             <TextBlock Text="{Binding ProductDiscountAmount}" HorizontalAlignment="Right" FontSize="40" ></TextBlock>
                             <TextBlock Text="%" HorizontalAlignment="Right" FontSize="40" ></TextBlock>
                         </StackPanel>
+
+                        <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Name="MinusBtn" Width="30" Content="-" Click="MinusBtn_Click"></Button>
+                            <TextBlock Text="{Binding ProductQuantityInStock}" FontSize="20" Name="CountTB" Margin="10,10,10,0"></TextBlock>
+                            <Button Name="PlusBtn" Width="30" Content="+" Click="PlusBtn_Click"></Button>
+                        </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
-        <ComboBox Name="PickupPoint_ComboBox" Grid.Column="1" Grid.Row="5"></ComboBox>
-        <Button Name="SaveOrderBtn" Content="Сохранить" Grid.Column="1" Grid.Row="6"></Button>
+
+        <ComboBox Name="PickupPoint_ComboBox" Grid.Column="1" Grid.Row="5">
+        </ComboBox>
+        <Button Name="SaveOrderBtn" Click="SaveOrderBtn_Click" Content="Сохранить" Grid.Column="1" Grid.Row="6"></Button>
         
     </Grid>
 </Window>

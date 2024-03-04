@@ -147,7 +147,8 @@ namespace TOPOTUSHKI
 
         private void MakeOrderBtn_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new OrderWindow(SelectedProducts, user));
+            OrderWindow orderWindow = new OrderWindow(SelectedProducts, user);
+            orderWindow.Show();
         }
     }
 }
