@@ -20,13 +20,13 @@ namespace TOPOTUSHKI
     /// </summary>  
     public partial class TopotushkiPage : Page
     {
-        private List<Product> SelectedProducts;
+        private List<OrderedProducts> SelectedProducts;
         private User user;
         public TopotushkiPage(User init_user)
         {
             InitializeComponent();
             user = init_user;
-            SelectedProducts = new List<Product>();
+            SelectedProducts = new List<Ordered>();
             if(user == null)
                 MenuItem.IsEnabled = false;
             UpdateTopoPage();
@@ -120,19 +120,19 @@ namespace TOPOTUSHKI
                         if(ProductBD.ProductQuantityInStock > 0)
                         {
                             bool inList = false;
-                            foreach(Product selProduct in SelectedProducts)
+                            foreach(OrderedProducts selProduct in SelectedProducts)
                             {
-                                if(selProduct.ProductArticleNumber == product.ProductArticleNumber)
+                                if(selProduct.ArticleNumber == product.ProductArticleNumber)
                                 {
                                     MessageBox.Show("Товар уже был в списке, поэтому количество этого товара в заказе было увеличено на 1");
-                                    selProduct.ProductQuantityInStock++;
+                                    selProduct.OrderedCount++;
                                     inList = true;
                                 }
                             }
                             if (!inList)
                             {
                                 product.ProductQuantityInStock = 1;
-                                SelectedProducts.Add(product);
+                                SelectedProducts.Add(new OrderedProducts(product.ProductArticleNumber, 1));
                             }
                         }
                         else

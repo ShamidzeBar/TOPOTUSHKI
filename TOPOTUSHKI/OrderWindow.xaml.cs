@@ -19,11 +19,11 @@ namespace TOPOTUSHKI
     /// </summary>
     public partial class OrderWindow : Window
     {
-        List<Product> SelectedProducts = new List<Product>();
+        List<OrderedProducts> SelectedProducts = new List<OrderedProducts>();
         List<Product> DBProducts;
         User user;
 
-        public OrderWindow(List<Product> selectedproducts, User user)
+        public OrderWindow(List<OrderedProducts> selectedproducts, User user)
         {
             InitializeComponent();
             DBProducts = TradeEntities.GetContext().Product.ToList();
@@ -46,7 +46,7 @@ namespace TOPOTUSHKI
             {
                 foreach (var DBproduct in DBProducts)
                 {
-                    if (selectedproduct.ProductArticleNumber == DBproduct.ProductArticleNumber)
+                    if (selectedproduct.ArticleNumber == DBproduct.ProductArticleNumber)
                     {
                         if (DBproduct.ProductQuantityInStock < 4)
                             fastDelivery = false;
@@ -72,9 +72,9 @@ namespace TOPOTUSHKI
 
             foreach (var selectedproduct in SelectedProducts)
             {
-                if (product.ProductArticleNumber == selectedproduct.ProductArticleNumber)
+                if (product.ProductArticleNumber == selectedproduct.ArticleNumber)
                 {
-                    selectedproduct.ProductQuantityInStock++;
+                    selectedproduct.OrderedCount++;
                 }
             }
             OrderListView.Items.Refresh();
@@ -87,10 +87,10 @@ namespace TOPOTUSHKI
 
             foreach (var selectedproduct in SelectedProducts)
             {
-                if (product.ProductArticleNumber == selectedproduct.ProductArticleNumber)
+                if (product.ProductArticleNumber == selectedproduct.ArticleNumber)
                 {
-                    if (selectedproduct.ProductQuantityInStock > 0)
-                        selectedproduct.ProductQuantityInStock--;
+                    if (selectedproduct.OrderedCount > 0)
+                        selectedproduct.OrderedCount--;
                 }
             }
             OrderListView.Items.Refresh();
@@ -105,7 +105,7 @@ namespace TOPOTUSHKI
                 return;
             }
 
-            SelectedProducts = SelectedProducts.FindAll(product => product.ProductQuantityInStock > 0);
+            SelectedProducts = SelectedProducts.FindAll(product => product.OrderedCount > 0);
 
             List<OrderProduct> orderProducts = new List<OrderProduct>();
             Order NewOrder = new Order();
@@ -124,8 +124,8 @@ namespace TOPOTUSHKI
             foreach (var selectedproduct in SelectedProducts)
             {
                 OrderProduct orderProduct = new OrderProduct();
-                orderProduct.ProductArticleNumber = selectedproduct.ProductArticleNumber;
-                orderProduct.Amount = selectedproduct.ProductQuantityInStock;
+                orderProduct.ProductArticleNumber = selectedproduct.ArticleNumber;
+                orderProduct.Amount = selectedproduct.OrderedCount;
                 orderProduct.OrderID = TradeEntities.GetContext().Order.ToList().Last().OrderID;
                 TradeEntities.GetContext().OrderProduct.Add(orderProduct);
                 TradeEntities.GetContext().SaveChanges();
@@ -140,7 +140,7 @@ namespace TOPOTUSHKI
         {
             Product product = (sender as Button).DataContext as Product;
 
-            SelectedProducts.Remove(SelectedProducts.Find(selpro => selpro.ProductArticleNumber == product.ProductArticleNumber));
+            SelectedProducts.Remove(SelectedProducts.Find(selpro => selpro.ArticleNumber == product.ProductArticleNumber));
 
             OrderListView.Items.Refresh();
         }

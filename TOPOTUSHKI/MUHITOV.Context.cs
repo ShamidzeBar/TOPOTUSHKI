@@ -35,10 +35,10 @@ namespace TOPOTUSHKI
         }
     
         public virtual DbSet<Order> Order { get; set; }
-        public virtual DbSet<OrderProduct> OrderProduct { get; set; }
         public virtual DbSet<PickupPoint> PickupPoint { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<OrderProduct> OrderProduct { get; set; }
     }
 }

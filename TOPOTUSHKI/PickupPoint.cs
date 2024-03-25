@@ -25,12 +25,7 @@ namespace TOPOTUSHKI
         public string PickupPointCity { get; set; }
         public string PickupPointStreet { get; set; }
         public string PickupPointNumber { get; set; }
-        
-        public string GetPickupPoint()
-        {
-            return PickupPointIndex + ' ' + PickupPointCity + ' ' + PickupPointStreet + ' ' +PickupPointNumber;
-        }
-
+    
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Order { get; set; }
     }

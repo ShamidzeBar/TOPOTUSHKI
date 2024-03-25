@@ -14,7 +14,6 @@ namespace TOPOTUSHKI
     
     public partial class OrderProduct
     {
-        public int OrderProductID { get; set; }
         public int OrderID { get; set; }
         public string ProductArticleNumber { get; set; }
         public Nullable<int> Amount { get; set; }

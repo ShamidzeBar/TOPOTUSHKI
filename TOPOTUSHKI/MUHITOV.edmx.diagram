@@ -4,18 +4,18 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="aa0e78e5500d40f3a67e8f1455c9d7a9" Name="Diagram1">
+      <Diagram DiagramId="694cc36f6bcb4c77bd9308675f67c603" Name="Diagram1">
         <EntityTypeShape EntityType="TradeModel.Order" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="TradeModel.OrderProduct" Width="1.5" PointX="7.5" PointY="1.375" IsExpanded="true" />
         <EntityTypeShape EntityType="TradeModel.PickupPoint" Width="1.5" PointX="3" PointY="5.375" IsExpanded="true" />
         <EntityTypeShape EntityType="TradeModel.Product" Width="1.5" PointX="5.25" PointY="4.875" IsExpanded="true" />
         <EntityTypeShape EntityType="TradeModel.Role" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
         <EntityTypeShape EntityType="TradeModel.User" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="TradeModel.OrderProduct" Width="1.5" PointX="7.5" PointY="1.5" IsExpanded="true" />
         <AssociationConnector Association="TradeModel.FK_Order_PickupPoint" ManuallyRouted="false" />
         <AssociationConnector Association="TradeModel.FK_Order_User" ManuallyRouted="false" />
         <AssociationConnector Association="TradeModel.FK_OrderProduct_Order" ManuallyRouted="false" />
         <AssociationConnector Association="TradeModel.FK_OrderProduct_Product" ManuallyRouted="false" />
-        <AssociationConnector Association="TradeModel.FK__User__UserRole__267ABA7A" ManuallyRouted="false" />
+        <AssociationConnector Association="TradeModel.FK__User__UserRole__30F848ED" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
