@@ -27,6 +27,8 @@ namespace TOPOTUSHKI
             InitializeComponent();
             user = init_user;
             SelectedProducts = new List<Product>();
+            if(user == null)
+                MenuItem.IsEnabled = false;
             UpdateTopoPage();
         }
 
@@ -140,7 +142,7 @@ namespace TOPOTUSHKI
                     }
                 }
             }
-            if (SelectedProducts.Count > 0)
+            if (SelectedProducts.Count > 0 && user.UserRole != 0)
                 MakeOrderBtn.Visibility = Visibility.Visible;
             ShoesListView.SelectedIndex = -1;
         }

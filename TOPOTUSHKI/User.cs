@@ -14,6 +14,12 @@ namespace TOPOTUSHKI
     
     public partial class User
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public User()
+        {
+            this.Order = new HashSet<Order>();
+        }
+    
         public int UserID { get; set; }
         public string UserSurname { get; set; }
         public string UserName { get; set; }
@@ -21,11 +27,14 @@ namespace TOPOTUSHKI
         public string UserLogin { get; set; }
         public string UserPassword { get; set; }
         public int UserRole { get; set; }
-        public String GetStringRole()
-        {
-            return Role.RoleName;
-        }
 
+        public string GetStringRole()
+        {
+            return Role.RoleName.ToString();
+        }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Order> Order { get; set; }
         public virtual Role Role { get; set; }
     }
 }

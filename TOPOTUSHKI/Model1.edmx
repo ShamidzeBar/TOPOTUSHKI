@@ -13,17 +13,15 @@
           <Property Name="OrderDate" Type="datetime" Nullable="false" />
           <Property Name="OrderDeliveryDate" Type="datetime" Nullable="false" />
           <Property Name="OrderPickupPoint" Type="int" Nullable="false" />
-          <Property Name="OrderClient" Type="nchar" MaxLength="100" />
+          <Property Name="IDClient" Type="int" Nullable="false" />
           <Property Name="OrderReceiveCode" Type="nchar" MaxLength="100" Nullable="false" />
           <Property Name="OrderStatus" Type="nvarchar" MaxLength="100" Nullable="false" />
         </EntityType>
-        <!--Ошибки, обнаруженные при создании:
-предупреждение 6002: В таблице или представлении "Trade.dbo.OrderProduct" не определен первичный ключ. Ключ был выведен, а определение таблицы или представления было создано в режиме только для чтения.-->
         <EntityType Name="OrderProduct">
           <Key>
-            <PropertyRef Name="OrderID" />
-            <PropertyRef Name="ProductArticleNumber" />
+            <PropertyRef Name="OrderProductID" />
           </Key>
+          <Property Name="OrderProductID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="OrderID" Type="int" Nullable="false" />
           <Property Name="ProductArticleNumber" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="Amount" Type="int" />
@@ -72,18 +70,6 @@
           <Property Name="UserPassword" Type="nvarchar(max)" Nullable="false" />
           <Property Name="UserRole" Type="int" Nullable="false" />
         </EntityType>
-        <Association Name="FK__OrderProd__Produ__2E1BDC42">
-          <End Role="Product" Type="Self.Product" Multiplicity="1" />
-          <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Product">
-              <PropertyRef Name="ProductArticleNumber" />
-            </Principal>
-            <Dependent Role="OrderProduct">
-              <PropertyRef Name="ProductArticleNumber" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__User__UserRole__267ABA7A">
           <End Role="Role" Type="Self.Role" Multiplicity="1" />
           <End Role="User" Type="Self.User" Multiplicity="*" />
@@ -108,6 +94,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Order_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="IDClient" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_OrderProduct_Order">
           <End Role="Order" Type="Self.Order" Multiplicity="1" />
           <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
@@ -120,23 +118,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_OrderProduct_Product">
+          <End Role="Product" Type="Self.Product" Multiplicity="1" />
+          <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Product">
+              <PropertyRef Name="ProductArticleNumber" />
+            </Principal>
+            <Dependent Role="OrderProduct">
+              <PropertyRef Name="ProductArticleNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="Хранилище TradeModelContainer">
           <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="PickupPoint" EntityType="Self.PickupPoint" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Product" EntityType="Self.Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Role" EntityType="Self.Role" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-    [OrderProduct].[OrderID] AS [OrderID], 
-    [OrderProduct].[ProductArticleNumber] AS [ProductArticleNumber], 
-    [OrderProduct].[Amount] AS [Amount]
-    FROM [dbo].[OrderProduct] AS [OrderProduct]</DefiningQuery>
-          </EntitySet>
-          <AssociationSet Name="FK__OrderProd__Produ__2E1BDC42" Association="Self.FK__OrderProd__Produ__2E1BDC42">
-            <End Role="Product" EntitySet="Product" />
-            <End Role="OrderProduct" EntitySet="OrderProduct" />
-          </AssociationSet>
           <AssociationSet Name="FK__User__UserRole__267ABA7A" Association="Self.FK__User__UserRole__267ABA7A">
             <End Role="Role" EntitySet="Role" />
             <End Role="User" EntitySet="User" />
@@ -145,8 +145,16 @@
             <End Role="PickupPoint" EntitySet="PickupPoint" />
             <End Role="Order" EntitySet="Order" />
           </AssociationSet>
+          <AssociationSet Name="FK_Order_User" Association="Self.FK_Order_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
           <AssociationSet Name="FK_OrderProduct_Order" Association="Self.FK_OrderProduct_Order">
             <End Role="Order" EntitySet="Order" />
+            <End Role="OrderProduct" EntitySet="OrderProduct" />
+          </AssociationSet>
+          <AssociationSet Name="FK_OrderProduct_Product" Association="Self.FK_OrderProduct_Product">
+            <End Role="Product" EntitySet="Product" />
             <End Role="OrderProduct" EntitySet="OrderProduct" />
           </AssociationSet>
         </EntityContainer>
@@ -163,11 +171,23 @@
           <Property Name="OrderDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="OrderDeliveryDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="OrderPickupPoint" Type="Int32" Nullable="false" />
-          <Property Name="OrderClient" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+          <Property Name="IDClient" Type="Int32" Nullable="false" />
           <Property Name="OrderReceiveCode" Type="String" MaxLength="100" FixedLength="true" Unicode="true" Nullable="false" />
           <Property Name="OrderStatus" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="PickupPoint" Relationship="Self.FK_Order_PickupPoint" FromRole="Order" ToRole="PickupPoint" />
+          <NavigationProperty Name="User" Relationship="Self.FK_Order_User" FromRole="Order" ToRole="User" />
           <NavigationProperty Name="OrderProduct" Relationship="Self.FK_OrderProduct_Order" FromRole="Order" ToRole="OrderProduct" />
+        </EntityType>
+        <EntityType Name="OrderProduct">
+          <Key>
+            <PropertyRef Name="OrderProductID" />
+          </Key>
+          <Property Name="OrderProductID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderID" Type="Int32" Nullable="false" />
+          <Property Name="ProductArticleNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Amount" Type="Int32" />
+          <NavigationProperty Name="Order" Relationship="Self.FK_OrderProduct_Order" FromRole="OrderProduct" ToRole="Order" />
+          <NavigationProperty Name="Product" Relationship="Self.FK_OrderProduct_Product" FromRole="OrderProduct" ToRole="Product" />
         </EntityType>
         <EntityType Name="PickupPoint">
           <Key>
@@ -194,7 +214,7 @@
           <Property Name="ProductDiscountAmount" Type="Byte" />
           <Property Name="ProductQuantityInStock" Type="Int32" Nullable="false" />
           <Property Name="ProductStatus" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="OrderProduct" Relationship="Self.FK__OrderProd__Produ__2E1BDC42" FromRole="Product" ToRole="OrderProduct" />
+          <NavigationProperty Name="OrderProduct" Relationship="Self.FK_OrderProduct_Product" FromRole="Product" ToRole="OrderProduct" />
         </EntityType>
         <EntityType Name="Role">
           <Key>
@@ -215,18 +235,8 @@
           <Property Name="UserLogin" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="UserPassword" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="UserRole" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Order" Relationship="Self.FK_Order_User" FromRole="User" ToRole="Order" />
           <NavigationProperty Name="Role" Relationship="Self.FK__User__UserRole__267ABA7A" FromRole="User" ToRole="Role" />
-        </EntityType>
-        <EntityType Name="OrderProduct">
-          <Key>
-            <PropertyRef Name="OrderID" />
-            <PropertyRef Name="ProductArticleNumber" />
-          </Key>
-          <Property Name="OrderID" Type="Int32" Nullable="false" />
-          <Property Name="ProductArticleNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Amount" Type="Int32" />
-          <NavigationProperty Name="Order" Relationship="Self.FK_OrderProduct_Order" FromRole="OrderProduct" ToRole="Order" />
-          <NavigationProperty Name="Product" Relationship="Self.FK__OrderProd__Produ__2E1BDC42" FromRole="OrderProduct" ToRole="Product" />
         </EntityType>
         <Association Name="FK_Order_PickupPoint">
           <End Role="PickupPoint" Type="Self.PickupPoint" Multiplicity="1" />
@@ -237,6 +247,18 @@
             </Principal>
             <Dependent Role="Order">
               <PropertyRef Name="OrderPickupPoint" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Order_User">
+          <End Role="User" Type="Self.User" Multiplicity="1" />
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="IDClient" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -252,7 +274,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__OrderProd__Produ__2E1BDC42">
+        <Association Name="FK_OrderProduct_Product">
           <End Role="Product" Type="Self.Product" Multiplicity="1" />
           <End Role="OrderProduct" Type="Self.OrderProduct" Multiplicity="*" />
           <ReferentialConstraint>
@@ -278,20 +300,24 @@
         </Association>
         <EntityContainer Name="TradeEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Order" EntityType="Self.Order" />
+          <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" />
           <EntitySet Name="PickupPoint" EntityType="Self.PickupPoint" />
           <EntitySet Name="Product" EntityType="Self.Product" />
           <EntitySet Name="Role" EntityType="Self.Role" />
           <EntitySet Name="User" EntityType="Self.User" />
-          <EntitySet Name="OrderProduct" EntityType="Self.OrderProduct" />
           <AssociationSet Name="FK_Order_PickupPoint" Association="Self.FK_Order_PickupPoint">
             <End Role="PickupPoint" EntitySet="PickupPoint" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Order_User" Association="Self.FK_Order_User">
+            <End Role="User" EntitySet="User" />
             <End Role="Order" EntitySet="Order" />
           </AssociationSet>
           <AssociationSet Name="FK_OrderProduct_Order" Association="Self.FK_OrderProduct_Order">
             <End Role="Order" EntitySet="Order" />
             <End Role="OrderProduct" EntitySet="OrderProduct" />
           </AssociationSet>
-          <AssociationSet Name="FK__OrderProd__Produ__2E1BDC42" Association="Self.FK__OrderProd__Produ__2E1BDC42">
+          <AssociationSet Name="FK_OrderProduct_Product" Association="Self.FK_OrderProduct_Product">
             <End Role="Product" EntitySet="Product" />
             <End Role="OrderProduct" EntitySet="OrderProduct" />
           </AssociationSet>
@@ -313,9 +339,19 @@
                 <ScalarProperty Name="OrderDate" ColumnName="OrderDate" />
                 <ScalarProperty Name="OrderDeliveryDate" ColumnName="OrderDeliveryDate" />
                 <ScalarProperty Name="OrderPickupPoint" ColumnName="OrderPickupPoint" />
-                <ScalarProperty Name="OrderClient" ColumnName="OrderClient" />
+                <ScalarProperty Name="IDClient" ColumnName="IDClient" />
                 <ScalarProperty Name="OrderReceiveCode" ColumnName="OrderReceiveCode" />
                 <ScalarProperty Name="OrderStatus" ColumnName="OrderStatus" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="OrderProduct">
+            <EntityTypeMapping TypeName="TradeModel.OrderProduct">
+              <MappingFragment StoreEntitySet="OrderProduct">
+                <ScalarProperty Name="OrderProductID" ColumnName="OrderProductID" />
+                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
+                <ScalarProperty Name="ProductArticleNumber" ColumnName="ProductArticleNumber" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -364,15 +400,6 @@
                 <ScalarProperty Name="UserLogin" ColumnName="UserLogin" />
                 <ScalarProperty Name="UserPassword" ColumnName="UserPassword" />
                 <ScalarProperty Name="UserRole" ColumnName="UserRole" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="OrderProduct">
-            <EntityTypeMapping TypeName="TradeModel.OrderProduct">
-              <MappingFragment StoreEntitySet="OrderProduct">
-                <ScalarProperty Name="OrderID" ColumnName="OrderID" />
-                <ScalarProperty Name="ProductArticleNumber" ColumnName="ProductArticleNumber" />
-                <ScalarProperty Name="Amount" ColumnName="Amount" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

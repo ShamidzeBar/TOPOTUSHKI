@@ -58,7 +58,7 @@
         <ListView Name="ShoesListView" Grid.Row="2" FontFamily="Comic Sans MS" >
             <ListView.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Добавить к заказу" Click="MenuItem_Click" ></MenuItem>
+                    <MenuItem Name="MenuItem" Header="Добавить к заказу" Click="MenuItem_Click" ></MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
             <ListView.ItemTemplate>
