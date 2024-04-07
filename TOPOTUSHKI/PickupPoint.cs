@@ -11,7 +11,7 @@ namespace TOPOTUSHKI
 {
     using System;
     using System.Collections.Generic;
-    
+
     public partial class PickupPoint
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -19,12 +19,15 @@ namespace TOPOTUSHKI
         {
             this.Order = new HashSet<Order>();
         }
-    
+
         public int PickupPointID { get; set; }
         public string PickupPointIndex { get; set; }
         public string PickupPointCity { get; set; }
         public string PickupPointStreet { get; set; }
         public string PickupPointNumber { get; set; }
+
+        //public string GetPickupPoint{ get { return PickupPointIndex + " " + PickupPointCity + " " + PickupPointStreet + " " + PickupPointNumber; } }
+        
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Order { get; set; }

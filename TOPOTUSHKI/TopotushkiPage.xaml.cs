@@ -26,7 +26,7 @@ namespace TOPOTUSHKI
         {
             InitializeComponent();
             user = init_user;
-            SelectedProducts = new List<Ordered>();
+            SelectedProducts = new List<OrderedProducts>();
             if(user == null)
                 MenuItem.IsEnabled = false;
             UpdateTopoPage();
@@ -110,19 +110,21 @@ namespace TOPOTUSHKI
             {
                 List<Product> ProductsBD = TradeEntities.GetContext().Product.ToList();
 
-                Product product = ShoesListView.SelectedItem as Product;
+                Product temp = ShoesListView.SelectedItem as Product;
+
+                OrderedProducts product = OrderedProducts.ToOrderedProducts(temp);
                 
 
                 foreach(Product ProductBD in ProductsBD)
                 {
-                    if(ProductBD.ProductArticleNumber == product.ProductArticleNumber)
+                    if(ProductBD.ProductArticleNumber == product.ArticleNumber)
                     {
                         if(ProductBD.ProductQuantityInStock > 0)
                         {
                             bool inList = false;
                             foreach(OrderedProducts selProduct in SelectedProducts)
                             {
-                                if(selProduct.ArticleNumber == product.ProductArticleNumber)
+                                if(selProduct.ArticleNumber == product.ArticleNumber)
                                 {
                                     MessageBox.Show("Товар уже был в списке, поэтому количество этого товара в заказе было увеличено на 1");
                                     selProduct.OrderedCount++;
@@ -131,8 +133,9 @@ namespace TOPOTUSHKI
                             }
                             if (!inList)
                             {
-                                product.ProductQuantityInStock = 1;
-                                SelectedProducts.Add(new OrderedProducts(product.ProductArticleNumber, 1));
+                                product.OrderedCount = 1;
+                                SelectedProducts.Add(product);
+                                //(new OrderedProducts(product., 1, product.ProductDiscountAmount, product.ProductManufacturer, product.ProductDescription, product.ProductCost, product.ProductName, product.ProductPhoto));
                             }
                         }
                         else
@@ -149,7 +152,7 @@ namespace TOPOTUSHKI
 
         private void MakeOrderBtn_Click(object sender, RoutedEventArgs e)
         {
-            OrderWindow orderWindow = new OrderWindow(SelectedProducts, user);
+            OrderWindow orderWindow = new OrderWindow(ref SelectedProducts, user);
             orderWindow.Show();
         }
     }

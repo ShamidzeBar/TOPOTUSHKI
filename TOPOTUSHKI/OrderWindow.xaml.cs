@@ -20,15 +20,16 @@ namespace TOPOTUSHKI
     public partial class OrderWindow : Window
     {
         List<OrderedProducts> SelectedProducts = new List<OrderedProducts>();
-        List<Product> DBProducts;
+        List<OrderedProducts> RefSelectedProducts;
+
         User user;
 
-        public OrderWindow(List<OrderedProducts> selectedproducts, User user)
+        public OrderWindow(ref List<OrderedProducts> selectedproducts, User user)
         {
             InitializeComponent();
-            DBProducts = TradeEntities.GetContext().Product.ToList();
-            OrderListView.ItemsSource = selectedproducts;
-            SelectedProducts = selectedproducts;
+            RefSelectedProducts = selectedproducts;
+            SelectedProducts = new List<OrderedProducts>(selectedproducts);
+            OrderListView.ItemsSource = SelectedProducts;
             PickupPoint_ComboBox.ItemsSource = TradeEntities.GetContext().PickupPoint.ToList();
 
             this.user = user;
@@ -42,6 +43,8 @@ namespace TOPOTUSHKI
         private DateTime SetDeliveryTime()
         {
             bool fastDelivery = true;
+
+            List<Product> DBProducts = TradeEntities.GetContext().Product.ToList();
             foreach (var selectedproduct in SelectedProducts)
             {
                 foreach (var DBproduct in DBProducts)
@@ -68,11 +71,11 @@ namespace TOPOTUSHKI
 
         private void PlusBtn_Click(object sender, RoutedEventArgs e)
         {
-            Product product = (sender as Button).DataContext as Product;
+            OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
 
             foreach (var selectedproduct in SelectedProducts)
             {
-                if (product.ProductArticleNumber == selectedproduct.ArticleNumber)
+                if (product.ArticleNumber == selectedproduct.ArticleNumber)
                 {
                     selectedproduct.OrderedCount++;
                 }
@@ -83,11 +86,11 @@ namespace TOPOTUSHKI
 
         private void MinusBtn_Click(object sender, RoutedEventArgs e)
         {
-            Product product = (sender as Button).DataContext as Product;
+            OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
 
             foreach (var selectedproduct in SelectedProducts)
             {
-                if (product.ProductArticleNumber == selectedproduct.ArticleNumber)
+                if (product.ArticleNumber == selectedproduct.ArticleNumber)
                 {
                     if (selectedproduct.OrderedCount > 0)
                         selectedproduct.OrderedCount--;
@@ -105,44 +108,66 @@ namespace TOPOTUSHKI
                 return;
             }
 
+
+
             SelectedProducts = SelectedProducts.FindAll(product => product.OrderedCount > 0);
 
-            List<OrderProduct> orderProducts = new List<OrderProduct>();
-            Order NewOrder = new Order();
-            int OrderID = TradeEntities.GetContext().Order.ToList().Count + 1;
-
-            NewOrder.IDClient = user.UserID;
-            NewOrder.OrderDeliveryDate = SetDeliveryTime();
-            NewOrder.OrderDate = DateTime.Now;
-            NewOrder.PickupPoint = TradeEntities.GetContext().PickupPoint.ToList()[PickupPoint_ComboBox.SelectedIndex];
-            NewOrder.OrderReceiveCode = (910 + OrderID).ToString();
-            NewOrder.OrderStatus = "Новый";
-
-            TradeEntities.GetContext().Order.Add(NewOrder);
-            TradeEntities.GetContext().SaveChanges();
-
-            foreach (var selectedproduct in SelectedProducts)
+            if (SelectedProducts.Count == 0)
             {
-                OrderProduct orderProduct = new OrderProduct();
-                orderProduct.ProductArticleNumber = selectedproduct.ArticleNumber;
-                orderProduct.Amount = selectedproduct.OrderedCount;
-                orderProduct.OrderID = TradeEntities.GetContext().Order.ToList().Last().OrderID;
-                TradeEntities.GetContext().OrderProduct.Add(orderProduct);
+                MessageBox.Show("Список заказанных товаров пуст!");
+            }
+            else
+            {
+                List<OrderProduct> orderProducts = new List<OrderProduct>();
+                Order NewOrder = new Order();
+                int OrderID = TradeEntities.GetContext().Order.ToList().Count + 1;
+
+                NewOrder.IDClient = user.UserID;
+                NewOrder.OrderDeliveryDate = SetDeliveryTime();
+                NewOrder.OrderDate = DateTime.Now;
+                NewOrder.PickupPoint = TradeEntities.GetContext().PickupPoint.ToList()[PickupPoint_ComboBox.SelectedIndex];
+                NewOrder.OrderReceiveCode = (910 + OrderID).ToString();
+                NewOrder.OrderStatus = "Новый";
+
+                TradeEntities.GetContext().Order.Add(NewOrder);
                 TradeEntities.GetContext().SaveChanges();
+
+                foreach (var selectedproduct in SelectedProducts)
+                {
+                    OrderProduct orderProduct = new OrderProduct();
+                    orderProduct.ProductArticleNumber = selectedproduct.ArticleNumber;
+                    orderProduct.Amount = selectedproduct.OrderedCount;
+                    orderProduct.OrderID = TradeEntities.GetContext().Order.ToList().Last().OrderID;
+                    TradeEntities.GetContext().OrderProduct.Add(orderProduct);
+                    TradeEntities.GetContext().SaveChanges();
+                }
+
+                SelectedProducts.Clear();
+                MessageBox.Show("Заказ успешно сформирован!");
+                this.Close();
             }
 
-            MessageBox.Show("Заказ успешно сформирован!");
-            SelectedProducts.Clear();
-            this.Close();
+            RefSelectedProducts.Clear();
         }
 
         private void DelBtn_Click(object sender, RoutedEventArgs e)
         {
-            Product product = (sender as Button).DataContext as Product;
+            OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
 
-            SelectedProducts.Remove(SelectedProducts.Find(selpro => selpro.ArticleNumber == product.ProductArticleNumber));
+            SelectedProducts.Remove(SelectedProducts.Find(selpro => selpro.ArticleNumber == product.ArticleNumber));
 
             OrderListView.Items.Refresh();
+            SetDeliveryTime();
+        }
+
+        private void BackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var somelist = SelectedProducts.FindAll(product => product.OrderedCount > 0);
+            if(somelist.Count == 0) 
+            {
+                RefSelectedProducts.Clear();
+            }
+            this.Close();
         }
     }
 }

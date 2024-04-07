@@ -27,6 +27,11 @@ namespace TOPOTUSHKI
         public string UserLogin { get; set; }
         public string UserPassword { get; set; }
         public int UserRole { get; set; }
+
+        public string GetStringRole()
+        {
+            return this.Role.RoleName.ToString();
+        }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Order { get; set; }
