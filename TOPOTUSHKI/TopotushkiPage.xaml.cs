@@ -27,13 +27,19 @@ namespace TOPOTUSHKI
             InitializeComponent();
             user = init_user;
             SelectedProducts = new List<OrderedProducts>();
-            if(user == null)
-                MenuItem.IsEnabled = false;
             UpdateTopoPage();
         }
 
         private void UpdateTopoPage()
         {
+            if (SelectedProducts.Count() == 0)
+                MakeOrderBtn.Visibility = Visibility.Hidden;
+            else
+                MakeOrderBtn.Visibility = Visibility.Visible;
+                
+
+
+
             if(user == null)
             {
                 LastName_TB.Text = ("Гость");
@@ -128,12 +134,14 @@ namespace TOPOTUSHKI
                                 {
                                     MessageBox.Show("Товар уже был в списке, поэтому количество этого товара в заказе было увеличено на 1");
                                     selProduct.OrderedCount++;
+                                    ProductBD.ProductQuantityInStock--;
                                     inList = true;
                                 }
                             }
                             if (!inList)
                             {
                                 product.OrderedCount = 1;
+                                ProductBD.ProductQuantityInStock--;
                                 SelectedProducts.Add(product);
                                 //(new OrderedProducts(product., 1, product.ProductDiscountAmount, product.ProductManufacturer, product.ProductDescription, product.ProductCost, product.ProductName, product.ProductPhoto));
                             }
@@ -145,7 +153,7 @@ namespace TOPOTUSHKI
                     }
                 }
             }
-            if (SelectedProducts.Count > 0 && user.UserRole != 0)
+            if (SelectedProducts.Count > 0 )
                 MakeOrderBtn.Visibility = Visibility.Visible;
             ShoesListView.SelectedIndex = -1;
         }
@@ -154,6 +162,7 @@ namespace TOPOTUSHKI
         {
             OrderWindow orderWindow = new OrderWindow(ref SelectedProducts, user);
             orderWindow.Show();
+            MakeOrderBtn.Visibility = Visibility.Hidden;
         }
     }
 }

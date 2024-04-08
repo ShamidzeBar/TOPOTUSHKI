@@ -21,7 +21,7 @@ namespace TOPOTUSHKI
     {
         List<OrderedProducts> SelectedProducts = new List<OrderedProducts>();
         List<OrderedProducts> RefSelectedProducts;
-
+        List<Product> DBProducts;
         User user;
 
         public OrderWindow(ref List<OrderedProducts> selectedproducts, User user)
@@ -32,8 +32,14 @@ namespace TOPOTUSHKI
             OrderListView.ItemsSource = SelectedProducts;
             PickupPoint_ComboBox.ItemsSource = TradeEntities.GetContext().PickupPoint.ToList();
 
+            DBProducts = TradeEntities.GetContext().Product.ToList();
+
+
             this.user = user;
-            ClientName.Text = user.UserSurname + " " + user.UserName + " " + user.UserPatronymic;
+            if (user != null)
+                ClientName.Text = user.UserSurname + " " + user.UserName + " " + user.UserPatronymic;
+            else
+                ClientName.Text = "Гость";
             OrderDate.Text = DateTime.Now.ToString();
             OrderID.Text = (TradeEntities.GetContext().Order.ToList().Last().OrderID + 1).ToString();
 
@@ -42,9 +48,9 @@ namespace TOPOTUSHKI
 
         private DateTime SetDeliveryTime()
         {
+            Update();
             bool fastDelivery = true;
 
-            List<Product> DBProducts = TradeEntities.GetContext().Product.ToList();
             foreach (var selectedproduct in SelectedProducts)
             {
                 foreach (var DBproduct in DBProducts)
@@ -73,31 +79,59 @@ namespace TOPOTUSHKI
         {
             OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
 
-            foreach (var selectedproduct in SelectedProducts)
+           
+            if (DBProducts.Find(p => p.ProductArticleNumber == product.ArticleNumber).ProductQuantityInStock == 0)
             {
-                if (product.ArticleNumber == selectedproduct.ArticleNumber)
+
+                DBProducts.Find(p => p.ProductArticleNumber == product.ArticleNumber).ProductQuantityInStock--;
+
+                foreach (var selectedproduct in SelectedProducts)
                 {
-                    selectedproduct.OrderedCount++;
+                    if (product.ArticleNumber == selectedproduct.ArticleNumber)
+                    {
+                        selectedproduct.OrderedCount++;
+                    }
                 }
+
+                OrderListView.Items.Refresh();
+                SetDeliveryTime();
             }
-            OrderListView.Items.Refresh();
-            SetDeliveryTime();
+            else
+            {
+                MessageBox.Show("Товар закончился на складе!");
+            }
         }
 
         private void MinusBtn_Click(object sender, RoutedEventArgs e)
         {
-            OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
 
-            foreach (var selectedproduct in SelectedProducts)
+            OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
+            if (product.OrderedCount != 0)
             {
-                if (product.ArticleNumber == selectedproduct.ArticleNumber)
+                DBProducts.Find(p => p.ProductArticleNumber == product.ArticleNumber).ProductQuantityInStock++;
+
+                foreach (var selectedproduct in SelectedProducts)
                 {
-                    if (selectedproduct.OrderedCount > 0)
-                        selectedproduct.OrderedCount--;
+                    if (product.ArticleNumber == selectedproduct.ArticleNumber)
+                    {
+                        if (selectedproduct.OrderedCount > 0)
+                            selectedproduct.OrderedCount--;
+                    }
                 }
+                OrderListView.Items.Refresh();
+                SetDeliveryTime();
             }
-            OrderListView.Items.Refresh();
-            SetDeliveryTime();
+        }
+
+        void Update()
+        {
+            int sum = 0;
+            foreach (var product in SelectedProducts)
+            {
+                sum += Convert.ToInt32(product.ProductCost * product.OrderedCount);
+            }
+
+            FinalPrice.Text = sum.ToString();
         }
 
         private void SaveOrderBtn_Click(object sender, RoutedEventArgs e)
@@ -122,7 +156,10 @@ namespace TOPOTUSHKI
                 Order NewOrder = new Order();
                 int OrderID = TradeEntities.GetContext().Order.ToList().Count + 1;
 
-                NewOrder.IDClient = user.UserID;
+                if (user == null)
+                    NewOrder.IDClient = 52;
+                else
+                    NewOrder.IDClient = user.UserID;
                 NewOrder.OrderDeliveryDate = SetDeliveryTime();
                 NewOrder.OrderDate = DateTime.Now;
                 NewOrder.PickupPoint = TradeEntities.GetContext().PickupPoint.ToList()[PickupPoint_ComboBox.SelectedIndex];
@@ -163,7 +200,7 @@ namespace TOPOTUSHKI
         private void BackBtn_Click(object sender, RoutedEventArgs e)
         {
             var somelist = SelectedProducts.FindAll(product => product.OrderedCount > 0);
-            if(somelist.Count == 0) 
+            if (somelist.Count == 0)
             {
                 RefSelectedProducts.Clear();
             }

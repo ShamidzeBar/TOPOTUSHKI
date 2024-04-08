@@ -88,6 +88,12 @@
 
         <Button Name="SaveOrderBtn" Click="SaveOrderBtn_Click" Content="Сохранить" Grid.Column="1" Grid.Row="6"></Button>
         <Button Name="BackBtn" Click="BackBtn_Click" Content="Назад" Grid.Column="1" Grid.Row="6" HorizontalAlignment="Right" ></Button>
+        <StackPanel Grid.Column="1" Grid.Row="6" VerticalAlignment="Center" Orientation="Horizontal" >
+            <TextBlock Text="Итого: "></TextBlock>
+            <TextBlock Name="FinalPrice"></TextBlock>
+            <TextBlock Text=" Руб."></TextBlock>
+        </StackPanel>
+        
         <ComboBox Name="PickupPoint_ComboBox"  Grid.Column="1"  Grid.Row="5">
             <ComboBox.ItemTemplate>
                 <DataTemplate>
