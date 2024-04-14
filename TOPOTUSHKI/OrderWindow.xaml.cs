@@ -79,8 +79,8 @@ namespace TOPOTUSHKI
         {
             OrderedProducts product = (sender as Button).DataContext as OrderedProducts;
 
-           
-            if (DBProducts.Find(p => p.ProductArticleNumber == product.ArticleNumber).ProductQuantityInStock == 0)
+
+            if (DBProducts.Find(p => p.ProductArticleNumber == product.ArticleNumber).ProductQuantityInStock > 0)
             {
 
                 DBProducts.Find(p => p.ProductArticleNumber == product.ArticleNumber).ProductQuantityInStock--;
@@ -144,45 +144,45 @@ namespace TOPOTUSHKI
 
 
 
-            SelectedProducts = SelectedProducts.FindAll(product => product.OrderedCount > 0);
-
-            if (SelectedProducts.Count == 0)
+            if (SelectedProducts.FindAll(product => product.OrderedCount > 0).Count == 0)
             {
                 MessageBox.Show("Список заказанных товаров пуст!");
+                return;
             }
+
+            SelectedProducts = SelectedProducts.FindAll(product => product.OrderedCount > 0);
+
+            List<OrderProduct> orderProducts = new List<OrderProduct>();
+            Order NewOrder = new Order();
+            int OrderID = TradeEntities.GetContext().Order.ToList().Count + 1;
+
+            if (user == null)
+                NewOrder.IDClient = 52;
             else
+                NewOrder.IDClient = user.UserID;
+            NewOrder.OrderDeliveryDate = SetDeliveryTime();
+            NewOrder.OrderDate = DateTime.Now;
+            NewOrder.PickupPoint = TradeEntities.GetContext().PickupPoint.ToList()[PickupPoint_ComboBox.SelectedIndex];
+            NewOrder.OrderReceiveCode = (910 + OrderID).ToString();
+            NewOrder.OrderStatus = "Новый";
+
+            TradeEntities.GetContext().Order.Add(NewOrder);
+            TradeEntities.GetContext().SaveChanges();
+
+            foreach (var selectedproduct in SelectedProducts)
             {
-                List<OrderProduct> orderProducts = new List<OrderProduct>();
-                Order NewOrder = new Order();
-                int OrderID = TradeEntities.GetContext().Order.ToList().Count + 1;
-
-                if (user == null)
-                    NewOrder.IDClient = 52;
-                else
-                    NewOrder.IDClient = user.UserID;
-                NewOrder.OrderDeliveryDate = SetDeliveryTime();
-                NewOrder.OrderDate = DateTime.Now;
-                NewOrder.PickupPoint = TradeEntities.GetContext().PickupPoint.ToList()[PickupPoint_ComboBox.SelectedIndex];
-                NewOrder.OrderReceiveCode = (910 + OrderID).ToString();
-                NewOrder.OrderStatus = "Новый";
-
-                TradeEntities.GetContext().Order.Add(NewOrder);
+                OrderProduct orderProduct = new OrderProduct();
+                orderProduct.ProductArticleNumber = selectedproduct.ArticleNumber;
+                orderProduct.Amount = selectedproduct.OrderedCount;
+                orderProduct.OrderID = TradeEntities.GetContext().Order.ToList().Last().OrderID;
+                TradeEntities.GetContext().OrderProduct.Add(orderProduct);
                 TradeEntities.GetContext().SaveChanges();
-
-                foreach (var selectedproduct in SelectedProducts)
-                {
-                    OrderProduct orderProduct = new OrderProduct();
-                    orderProduct.ProductArticleNumber = selectedproduct.ArticleNumber;
-                    orderProduct.Amount = selectedproduct.OrderedCount;
-                    orderProduct.OrderID = TradeEntities.GetContext().Order.ToList().Last().OrderID;
-                    TradeEntities.GetContext().OrderProduct.Add(orderProduct);
-                    TradeEntities.GetContext().SaveChanges();
-                }
-
-                SelectedProducts.Clear();
-                MessageBox.Show("Заказ успешно сформирован!");
-                this.Close();
             }
+
+            SelectedProducts.Clear();
+            MessageBox.Show("Заказ успешно сформирован!");
+            this.Close();
+
 
             RefSelectedProducts.Clear();
         }
